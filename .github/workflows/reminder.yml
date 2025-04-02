@@ -1,0 +1,29 @@
+name: Notion Task Reminder
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日0時（UTC）に実行、日本時間で朝9時にしたい場合は cron を '0 0 * * *' → '0 0 * * *' のままでOK
+  workflow_dispatch:     # 手動実行もできる
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run reminder script
+        run: python notion_reminder.py
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
